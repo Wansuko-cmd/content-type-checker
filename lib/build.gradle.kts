@@ -6,13 +6,11 @@
  * User Manual available at https://docs.gradle.org/7.0/userguide/building_java_projects.html
  */
 
-val ktor_version: String by project
+val ktorVersion: String by project
 
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
-    kotlin("jvm") version "1.5.0"
-
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.5.0"
+    kotlin("jvm") version "1.5.30"
 
     // Apply the java-library plugin for API and implementation separation.
     `java-library`
@@ -38,10 +36,6 @@ dependencies {
     // Use the Kotlin JUnit integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 
-//    //クライアント側
-//    implementation("io.ktor:ktor-client-core:$ktor_version")
-//    implementation("io.ktor:ktor-client-cio:$ktor_version")
-//    implementation("io.ktor:ktor-client-serialization:$ktor_version")
-//
-//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+
 }
