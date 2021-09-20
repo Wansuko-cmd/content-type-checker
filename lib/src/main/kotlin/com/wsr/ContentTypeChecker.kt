@@ -8,16 +8,19 @@ import io.ktor.util.*
 import io.ktor.util.pipeline.*
 
 
+private typealias contentTypeCheckerCallback = suspend PipelineContext<Unit, ApplicationCall>.(List<ContentType>) -> Unit
+
+
 class ContentTypeChecker(private val configuration: Configuration) {
 
     //設定ファイル
     class Configuration{
 
         //正しいContent-Typeの時
-        var onSuccess: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit = {}
+        var onSuccess: contentTypeCheckerCallback = {}
 
         //間違っている時
-        var onError: suspend PipelineContext<Unit, ApplicationCall>.() -> Unit = {}
+        var onError: contentTypeCheckerCallback = {}
 
         //間違っているときに、処理を続けるかどうか
         var continueOnError: Boolean = true
@@ -27,8 +30,8 @@ class ContentTypeChecker(private val configuration: Configuration) {
     fun intercept(
         contentTypeRoute: Route,
         allowContentTypes: List<ContentType>,
-        onSuccess: (suspend PipelineContext<Unit, ApplicationCall>.() -> Unit)? = null,
-        onError: (suspend PipelineContext<Unit, ApplicationCall>.() -> Unit)? = null,
+        onSuccess: contentTypeCheckerCallback? = null,
+        onError: contentTypeCheckerCallback? = null,
         continueOnError: Boolean? = null
     ){
 
@@ -43,11 +46,11 @@ class ContentTypeChecker(private val configuration: Configuration) {
 
                 //独自の処理があればそれを実行
                 if(onSuccess != null){
-                    onSuccess(this)
+                    onSuccess(this, allowContentTypes)
                 }
                 //なければ、install時の処理を実行
                 else{
-                    configuration.onSuccess(this)
+                    configuration.onSuccess(this, allowContentTypes)
                 }
 
                 proceed()
@@ -58,11 +61,11 @@ class ContentTypeChecker(private val configuration: Configuration) {
 
                 //独自の処理があればそれを実行
                 if(onError != null){
-                    onError(this)
+                    onError(this, allowContentTypes)
                 }
                 //なければ、install時の処理を実行
                 else{
-                    configuration.onError(this)
+                    configuration.onError(this, allowContentTypes)
                 }
 
                 //処理を続けない場合（独自のもので判定、なければinstall時のもので判定）
@@ -91,7 +94,7 @@ class ContentTypeChecker(private val configuration: Configuration) {
 
 
 
-class ContentTypeCheckerRouteSelector : RouteSelector(){
+private class ContentTypeCheckerRouteSelector : RouteSelector(){
     override fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation {
         return RouteSelectorEvaluation.Constant
     }
@@ -101,8 +104,8 @@ class ContentTypeCheckerRouteSelector : RouteSelector(){
 
 fun Route.allowContentType(
     allowContentTypes: List<ContentType>,
-    onSuccess: (suspend PipelineContext<Unit, ApplicationCall>.() -> Unit)? = null,
-    onError: (suspend PipelineContext<Unit, ApplicationCall>.() -> Unit)? = null,
+    onSuccess: contentTypeCheckerCallback? = null,
+    onError: contentTypeCheckerCallback? = null,
     continueOnError: Boolean? = null,
     build: Route.() -> Unit
 ): Route{
