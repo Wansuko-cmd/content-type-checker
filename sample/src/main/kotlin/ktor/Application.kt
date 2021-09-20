@@ -13,20 +13,54 @@ fun main(args: Array<String>) = io.ktor.server.netty.EngineMain.main(args)
 @Suppress("unused")
 fun Application.module(){
 
+
+    //デフォルト値を設定
     install(ContentTypeChecker){
+
+        //正しいContent-Typeの時の処理
+        onSuccess = {
+            println("Success")
+        }
+
+        ////間違っているContent-Typeの時の処理
         onError = {
             call.respond(
                 HttpStatusCode.UnsupportedMediaType,
                 "${call.request.contentType()}には対応していません"
             )
         }
-        continueOnError = true
+
+        //Content-Typeが間違っているときに、処理を続けるかどうか
+        continueOnError = false
     }
 
     routing {
-        allowContentType(listOf(ContentType.Application.Json)){
-            get{
-                call.respondText("Hello World")
+
+        //許可するContent-Typeを記述
+        allowContentType(
+            listOf(ContentType.Application.Json, ContentType.Application.Json)
+        ){
+            get("hello"){
+                //Something
+            }
+
+            post("hello"){
+                //Something
+            }
+        }
+
+        //デフォルト値をオーバーライドすることも可能
+        allowContentType(
+            listOf(ContentType.Audio.Any),
+            onSuccess = {
+                call.respond(HttpStatusCode.NotFound)
+            }
+        ){
+            get("world"){
+                //Something
+            }
+            post("world") {
+                //Something
             }
         }
     }

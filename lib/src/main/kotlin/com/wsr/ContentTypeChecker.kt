@@ -72,6 +72,8 @@ class ContentTypeChecker(private val configuration: Configuration) {
                 ) {
                     finish()
                 }
+
+                proceed()
             }
         }
     }
