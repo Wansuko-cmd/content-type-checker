@@ -13,20 +13,19 @@ fun main(args: Array<String>) = io.ktor.server.netty.EngineMain.main(args)
 @Suppress("unused")
 fun Application.module(){
 
-
     //デフォルト値を設定
     install(ContentTypeChecker){
 
         //正しいContent-Typeの時の処理
         onSuccess = {
-            println("Success")
+            println("Content-Type: ${call.request.contentType()}")
         }
 
         ////間違っているContent-Typeの時の処理
-        onError = {
+        onError = { allowContentType ->
             call.respond(
                 HttpStatusCode.UnsupportedMediaType,
-                "${call.request.contentType()}には対応していません"
+                "許可されているContent-Typeは${allowContentType.joinToString(", ")}のみです"
             )
         }
 
@@ -38,7 +37,7 @@ fun Application.module(){
 
         //許可するContent-Typeを記述
         allowContentType(
-            listOf(ContentType.Application.Json, ContentType.Application.Json)
+            listOf(ContentType.Application.Json, ContentType.Application.JavaScript)
         ){
             get("hello"){
                 //Something

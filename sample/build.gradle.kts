@@ -15,6 +15,7 @@ application {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://wansuko-cmd.github.io/maven/") }
 }
 
 dependencies {
@@ -23,5 +24,6 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
 
-    implementation(project(":lib"))
+    //Content-Type-Checker
+    implementation("com.wsr:content-type-checker:0.0.2")
 }
