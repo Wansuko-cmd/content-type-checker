@@ -7,6 +7,7 @@
  */
 
 val ktorVersion: String by project
+val mavenRepository: String by project
 
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
@@ -16,6 +17,24 @@ plugins {
     `java-library`
 
     `maven-publish`
+}
+
+publishing{
+    publications{
+        create<MavenPublication>("maven"){
+            groupId = "com.wsr"
+            artifactId = "content-type-checker"
+            version = "0.0.1"
+
+            from(components["java"])
+        }
+    }
+
+    repositories{
+        maven{
+            url = uri(mavenRepository)
+        }
+    }
 }
 
 repositories {

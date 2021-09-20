@@ -1,0 +1,2 @@
+publish:
+	gradle publish

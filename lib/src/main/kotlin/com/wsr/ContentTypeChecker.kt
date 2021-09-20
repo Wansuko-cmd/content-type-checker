@@ -107,8 +107,10 @@ fun Route.allowContentType(
     build: Route.() -> Unit
 ): Route{
 
+    //ルートの作成
     val contentTypeRoute = createChild(ContentTypeCheckerRouteSelector())
 
+    //featureのintercept
     application.feature(ContentTypeChecker)
         .intercept(
             contentTypeRoute,
@@ -118,6 +120,7 @@ fun Route.allowContentType(
             continueOnError
         )
 
+    //下位のルートの作成
     contentTypeRoute.build()
 
     return contentTypeRoute
