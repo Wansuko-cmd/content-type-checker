@@ -8,3 +8,4 @@
  */
 
 rootProject.name = "content-type-checker"
+include("lib", "sample")
