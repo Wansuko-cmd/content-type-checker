@@ -24,7 +24,7 @@ publishing{
         create<MavenPublication>("maven"){
             groupId = "com.wsr"
             artifactId = "content-type-checker"
-            version = "0.0.2"
+            version = "0.0.3"
 
             from(components["java"])
         }
