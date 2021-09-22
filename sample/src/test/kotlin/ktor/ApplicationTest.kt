@@ -1,0 +1,4 @@
+package ktor
+
+class ApplicationTest {
+}

@@ -37,7 +37,7 @@ fun Application.module(){
 
         //許可するContent-Typeを記述
         allowContentType(
-            listOf(ContentType.Application.Json, ContentType.Application.JavaScript)
+            ContentType.Application.Json, ContentType.Application.JavaScript
         ){
             get("hello"){
                 //Something
@@ -50,7 +50,7 @@ fun Application.module(){
 
         //デフォルト値をオーバーライドすることも可能
         allowContentType(
-            listOf(ContentType.Audio.Any),
+            ContentType.Audio.Any,
             onSuccess = {
                 call.respond(HttpStatusCode.NotFound)
             }

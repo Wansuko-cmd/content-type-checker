@@ -8,7 +8,7 @@ import io.ktor.util.*
 import io.ktor.util.pipeline.*
 
 
-private typealias contentTypeCheckerCallback = suspend PipelineContext<Unit, ApplicationCall>.(List<ContentType>) -> Unit
+typealias contentTypeCheckerCallback = suspend PipelineContext<Unit, ApplicationCall>.(List<ContentType>) -> Unit
 
 
 class ContentTypeChecker(private val configuration: Configuration) {
@@ -53,8 +53,6 @@ class ContentTypeChecker(private val configuration: Configuration) {
                     configuration.onSuccess(this, allowContentTypes)
                 }
 
-                proceed()
-
             }
             //許可された中に含まれていなければ
             else{
@@ -75,8 +73,6 @@ class ContentTypeChecker(private val configuration: Configuration) {
                 ) {
                     finish()
                 }
-
-                proceed()
             }
         }
     }
@@ -102,8 +98,9 @@ private class ContentTypeCheckerRouteSelector : RouteSelector(){
 
 
 
+@Suppress("unused")
 fun Route.allowContentType(
-    allowContentTypes: List<ContentType>,
+    vararg allowContentTypes: ContentType,
     onSuccess: contentTypeCheckerCallback? = null,
     onError: contentTypeCheckerCallback? = null,
     continueOnError: Boolean? = null,
@@ -117,7 +114,7 @@ fun Route.allowContentType(
     application.feature(ContentTypeChecker)
         .intercept(
             contentTypeRoute,
-            allowContentTypes,
+            allowContentTypes.toList(),
             onSuccess,
             onError,
             continueOnError

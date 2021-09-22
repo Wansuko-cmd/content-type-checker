@@ -25,5 +25,6 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
 
     //Content-Type-Checker
-    implementation("com.wsr:content-type-checker:0.0.2")
+//    implementation("com.wsr:content-type-checker:0.0.2")
+    implementation(project(":lib"))
 }
