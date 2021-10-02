@@ -45,7 +45,7 @@ jobs:
       - name: リモート先を確認
         run: |
           cd ${{ github.workspace }}/maven
-          git remote add origin https://github.com/Wansuko-cmd/maven.git
+          git remote set-url origin https://github.com/Wansuko-cmd/maven.git
 
       - name: ローカルのMavenリポジトリの変更をコミット
         run: |
