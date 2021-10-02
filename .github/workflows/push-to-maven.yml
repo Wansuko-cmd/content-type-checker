@@ -1,9 +1,9 @@
 name: '自身のMavenリポジトリにPush'
 
-on:
-  push:
-    branches:
-      - master
+on: [push]
+#  push:
+#    branches:
+#      - master
 
 jobs:
   Reflect-To-My-Maven:
