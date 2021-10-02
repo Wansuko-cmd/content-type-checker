@@ -1,9 +1,9 @@
 name: '自身のMavenリポジトリにPush'
 
-on: [push]
-#  push:
-#    branches:
-#      - master
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   Reflect-To-My-Maven:
@@ -43,15 +43,15 @@ jobs:
           git config --global user.email "63241922+Wansuko-cmd@users.noreply.github.com"
           git config --global user.name "Wansuko-cmd"
 
-      - name: ローカルのMavenリポジトリの変更を追加
-        run: |
-          cd ${{ github.workspace }}/maven
-          git add *
-
       - name: リモート先を変更
         run: |
           cd ${{ github.workspace }}/maven
           git remote set-url origin git@github.com:Wansuko-cmd/maven.git
+
+      - name: ローカルのMavenリポジトリの変更を追加
+        run: |
+          cd ${{ github.workspace }}/maven
+          git add *
 
       - name: ローカルのMavenリポジトリの変更をコミット
         run: |
