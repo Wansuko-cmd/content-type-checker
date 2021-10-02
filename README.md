@@ -111,35 +111,7 @@ onSuccess = {
 thisはPipelineで、普通のRouteと同じように記述可能です。
 また、itはList<ContentType>で、指定したContentTypeのリストを取得できます。
 
-### onError
-
-#### 型
-
-suspend PipelineContext<Unit, ApplicationCall>.(List<ContentType>) -> Unit
-
-#### 内容
-指定したContent-Typeとは違うリクエストが来た時に走る処理を記述します。
-この処理が走った後で、`continueOnError`の値によって、もともとの処理が走るかどうかが
-決まります。
-
-#### 書き方の例
-
-```kotlin
-
-onSuccess = {
-    println("Content-Type: ${call.request.contentType()}")
-
-    call.respond(
-        HttpStatusCode.UnsupportedMediaType,
-        "許可されているContent-Typeは${it.joinToString(", ")}のみです"
-    )
-}
-
-```
-
-基本的な書き方は`onSuccess`と同じです。
-
-### onErrorWhenAllow
+### onSuccessWhenAllow
 
 #### 型
 
@@ -180,7 +152,7 @@ suspend PipelineContext<Unit, ApplicationCall>.(List<ContentType>) -> Unit
 onErrorとほぼ同じですが、`allowContentType`の処理範囲内の場合こちらが適用されます。
 設定していなければ`onError`が適用されます
 
-### onErrorWhenAllow
+### onErrorWhenNegative
 
 #### 型
 
