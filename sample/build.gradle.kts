@@ -24,7 +24,11 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
 
+    //Test
+    testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
+
     //Content-Type-Checker
-//    implementation("com.wsr:content-type-checker:0.0.2")
+//    implementation("com.wsr:content-type-checker:0.0.3")
     implementation(project(":lib"))
 }

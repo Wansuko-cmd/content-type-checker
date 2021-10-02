@@ -1,0 +1,74 @@
+name: '自身のMavenリポジトリにPush'
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  Reflect-To-My-Maven:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 現ブランチからチェックアウト
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: SSHを設定
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.SSH_HOST }}
+
+      - name: 実行許可を付与
+        run: |
+          chmod 777 ${{ github.workspace }}/gradlew
+
+      - name: Publish用にビルド
+        run: |
+          cd ${{ github.workspace }}
+          ./gradlew publish
+
+      - name: Mavenリポジトリを取得
+        run: |
+          git clone https://github.com/Wansuko-cmd/maven.git
+
+      - name: ビルドしたものをローカルのMavenリポジトリに反映
+        run: |
+          cd ${{ github.workspace }}
+          cp -v -r ./lib/build/publish/com ./maven
+
+      - name: git configを設定
+        run: |
+          git config --global user.email "63241922+Wansuko-cmd@users.noreply.github.com"
+          git config --global user.name "Wansuko-cmd"
+
+      - name: リモート先を変更
+        run: |
+          cd ${{ github.workspace }}/maven
+          git remote set-url origin git@github.com:Wansuko-cmd/maven.git
+
+      - name: ローカルのMavenリポジトリの変更を追加
+        run: |
+          cd ${{ github.workspace }}/maven
+          git add *
+
+      - name: ローカルのMavenリポジトリの変更をコミット
+        run: |
+          cd ${{ github.workspace }}/maven
+          git commit -m "[update] Content-Type-Checkerのアップデート"
+
+      - name: Mavenリポジトリをチェックアウト
+        run: |
+          cd ${{ github.workspace }}/maven
+          git checkout -b "update/content-type-checker"
+
+      - name: Mavenリポジトリの履歴を確認
+        run: |
+          cd ${{ github.workspace }}/maven
+          git log
+
+      - name: ローカルのMavenの変更内容をプッシュ
+        run: |
+          cd ${{ github.workspace }}/maven
+          git push origin update/content-type-checker

@@ -2,6 +2,7 @@ package ktor
 
 import com.wsr.ContentTypeChecker
 import com.wsr.allowContentType
+import com.wsr.negativeContentType
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -16,16 +17,26 @@ fun Application.module(){
     //デフォルト値を設定
     install(ContentTypeChecker){
 
-        //正しいContent-Typeの時の処理
+        //allowContentTypeにおいて正しいContent-Typeの時の処理
         onSuccess = {
             println("Content-Type: ${call.request.contentType()}")
+            call.respond("Success")
         }
 
-        ////間違っているContent-Typeの時の処理
-        onError = { allowContentType ->
+        //allowContentTypeにおいて間違っているContent-Typeの時の処理
+        onErrorWhenAllow = {
+            println("Allowed: [${it.joinToString(", ")}], Request: ${call.request.contentType()}")
             call.respond(
                 HttpStatusCode.UnsupportedMediaType,
-                "許可されているContent-Typeは${allowContentType.joinToString(", ")}のみです"
+                "Error"
+            )
+        }
+
+        onErrorWhenNegative = {
+            println("Negative: [${it.joinToString(", ")}], Request: ${call.request.contentType()}")
+            call.respond(
+                HttpStatusCode.UnsupportedMediaType,
+                "Error"
             )
         }
 
@@ -39,11 +50,11 @@ fun Application.module(){
         allowContentType(
             ContentType.Application.Json, ContentType.Application.JavaScript
         ){
-            get("hello"){
+            get("allow") {
                 //Something
             }
 
-            post("hello"){
+            post("allow") {
                 //Something
             }
         }
@@ -52,15 +63,31 @@ fun Application.module(){
         allowContentType(
             ContentType.Audio.Any,
             onSuccess = {
-                call.respond(HttpStatusCode.NotFound)
+                call.respond(HttpStatusCode.IAmATeaPot)
             }
         ){
-            get("world"){
+            get("override") {
                 //Something
             }
-            post("world") {
+            post("override") {
+                //Something
+            }
+        }
+
+
+        //許可しないContent-Typeを記述
+        negativeContentType(
+            ContentType.Application.Xml, ContentType.Application.GZip
+        ) {
+            get("negative") {
+                //Something
+            }
+
+            post("negative") {
                 //Something
             }
         }
     }
 }
+
+val HttpStatusCode.Companion.IAmATeaPot get() = HttpStatusCode(418, "I'm a tea pot")
