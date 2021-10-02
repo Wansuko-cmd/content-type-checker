@@ -50,12 +50,12 @@ jobs:
           cd ${{ github.workspace }}/maven
           git commit -m "[update] Content-Type-Checkerのアップデート"
 
-      - name: Mavenリポジトリをチェックアウト
-        run: |
-          cd ${{ github.workspace }}/maven
-          git checkout -b "update/content-type-checker"
+#      - name: Mavenリポジトリをチェックアウト
+#        run: |
+#          cd ${{ github.workspace }}/maven
+#          git checkout -b "update/content-type-checker"
 
       - name: ローカルのMavenの変更内容をプッシュ
         run: |
           cd ${{ github.workspace }}/maven
-          git push origin update/content-type-checker
+          git push origin master:gh-pages
