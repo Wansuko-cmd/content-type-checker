@@ -14,6 +14,12 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: SSHを設定
+        uses: shimataro/ssh-key-action@v1
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.SSH_HOST }}
+
       - name: 実行許可を付与
         run: |
           chmod 777 ${{ github.workspace }}/gradlew
