@@ -40,9 +40,10 @@ jobs:
           cd ${{ github.workspace }}/maven
           git add *
 
-      run: |
-        cd ${{ github.workspace }}/maven
-        git remote -v
+      - name: リモート先を確認
+        run: |
+          cd ${{ github.workspace }}/maven
+          git remote -v
 
       - name: ローカルのMavenリポジトリの変更をコミット
         run: |
