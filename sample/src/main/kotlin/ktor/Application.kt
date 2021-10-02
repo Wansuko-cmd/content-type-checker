@@ -59,6 +59,22 @@ fun Application.module(){
             }
         }
 
+        //設定していれば、処理は中断される
+        allowContentType(
+            ContentType.Application.Pdf,
+            onSuccess = {
+                call.respond(HttpStatusCode.IAmATeaPot)
+            },
+            continueOnError = false
+        ){
+            get("continue-on-error") {
+                call.respond(HttpStatusCode.NotImplemented)
+            }
+            post("continue-on-error") {
+                call.respond(HttpStatusCode.NotImplemented)
+            }
+        }
+
         //デフォルト値をオーバーライドすることも可能
         allowContentType(
             ContentType.Audio.Any,

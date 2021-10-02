@@ -76,6 +76,20 @@ class ApplicationTest {
 
 
     class 共通のテスト {
+
+        @Test
+        fun continueOnErrorがfalseの時に違うContentTypeが来ると処理が中断される(){
+
+            withTestApplication({ module() }) {
+
+                handleRequest(HttpMethod.Get, "/continue-on-error") {
+                    addHeader("Content-Type", ContentType.Audio.Any.toString())
+                }.apply {
+                    assertEquals(HttpStatusCode.UnsupportedMediaType, response.status())
+                }
+            }
+        }
+
         @Test
         fun それぞれのパラメーターはオーバーライドできる(){
 
