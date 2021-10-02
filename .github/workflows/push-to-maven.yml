@@ -23,7 +23,7 @@ jobs:
 
       - name: Mavenリポジトリを取得
         run: |
-          git clone git@github.com:Wansuko-cmd/maven.git
+          git clone https://github.com/Wansuko-cmd/maven.git
 
       - name: ビルドしたものをローカルのMavenリポジトリに反映
         run: |
@@ -32,13 +32,17 @@ jobs:
 
       - name: git configを設定
         run: |
-          git config --global user.email "wansuko.lll@gmail.com"
+          git config --global user.email "63241922+Wansuko-cmd@users.noreply.github.com"
           git config --global user.name "Wansuko-cmd"
 
       - name: ローカルのMavenリポジトリの変更を追加
         run: |
           cd ${{ github.workspace }}/maven
           git add *
+
+      run: |
+        cd ${{ github.workspace }}/maven
+        git remote -v
 
       - name: ローカルのMavenリポジトリの変更をコミット
         run: |
