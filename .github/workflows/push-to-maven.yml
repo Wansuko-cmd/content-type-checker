@@ -25,7 +25,7 @@ jobs:
         run: git config --global user.email "action@github.com" && git config --global user.name "Wansuko-cmd"
 
       - name: ビルドしたものをローカルのMavenリポジトリに反映
-        run: cd ${{ github.workspace }} && cp -v -r ./lib/build/publish/com ./maven/com
+        run: cd ${{ github.workspace }} && cp -v -r ./lib/build/publish/com ./maven
 
       - name: mavenの中身を確認
         run: cd ${{ github.workspace }}/maven/com/wsr/content-type-checker && ls
