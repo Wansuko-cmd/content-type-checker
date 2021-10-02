@@ -16,7 +16,7 @@ repositories {
 }
 
 //Content-Type-Checker
-implementation("com.wsr:content-type-checker:0.0.2")
+implementation("com.wsr:content-type-checker:0.0.3")
 
 ```
 
@@ -30,13 +30,15 @@ install(ContentTypeChecker){
     //正しいContent-Typeの時の処理
     onSuccess = {
         println("Content-Type: ${call.request.contentType()}")
+        call.respond("Success")
     }
 
     ////間違っているContent-Typeの時の処理
-    onError = { allowContentType ->
+    onError = {
+        println("Allowed: [${it.joinToString(", ")}], Request: ${call.request.contentType()}")
         call.respond(
             HttpStatusCode.UnsupportedMediaType,
-            "許可されているContent-Typeは${allowContentType.joinToString(", ")}のみです"
+            "Error"
         )
     }
 
@@ -52,7 +54,7 @@ install(ContentTypeChecker){
 
 //許可するContent-Typeを記述
 allowContentType(
-    listOf(ContentType.Application.Json, ContentType.Application.JavaScript)
+    ContentType.Application.Json, ContentType.Application.JavaScript
 ){
     get{
         //Something
@@ -65,7 +67,7 @@ allowContentType(
 
 //デフォルト値をオーバーライドすることも可能
 allowContentType(
-    listOf(ContentType.Audio.Any),
+    ContentType.Audio.Any,
     onSuccess = {
         call.respond(HttpStatusCode.NotFound)
     }
@@ -129,7 +131,7 @@ onSuccess = {
 
     call.respond(
         HttpStatusCode.UnsupportedMediaType,
-        "許可されているContent-Typeは${allowContentType.joinToString(", ")}のみです"
+        "許可されているContent-Typeは${it.joinToString(", ")}のみです"
     )
 }
 
@@ -165,7 +167,7 @@ continueOnError = false
 ```kotlin
 
 allowContentType(
-    listOf(ContentType.Audio.Any),
+    ContentType.Audio.Any,
     onSuccess = {
         call.respond(HttpStatusCode.NotFound)
     }
@@ -202,7 +204,7 @@ allowContentType(
 ```kotlin
 
 allowContentType(
-    listOf(ContentType.Application.Json)
+    ContentType.Application.Json
 ){
     get("hello"){
         //Something
@@ -210,7 +212,7 @@ allowContentType(
 }
 
 allowContentType(
-    listOf(ContentType.Audio.Any)
+    ContentType.Audio.Any,
 ){
     get("hello"){
         //Something

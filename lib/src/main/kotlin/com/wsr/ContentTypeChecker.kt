@@ -26,8 +26,32 @@ class ContentTypeChecker(private val configuration: Configuration) {
         var continueOnError: Boolean = true
     }
 
+
+    //成功時とエラー時のハンドリングを行う関数
+    private suspend fun PipelineContext<Unit, ApplicationCall>.executeHandling(
+        isSuccess: Boolean,
+        onSuccess: suspend () -> Unit,
+        onError: suspend () -> Unit,
+        continueOnError: Boolean
+    ){
+
+        //許可された中に含まれていれば成功処理
+        if (isSuccess) onSuccess()
+
+        //許可された中に含まれていなければ
+        else {
+
+            //エラー処理
+            onError()
+
+            //処理を続けない場合パイプラインを終了する
+            if (continueOnError) finish()
+        }
+    }
+
+
     //差し込む処理
-    fun intercept(
+    internal fun interceptOnAllow(
         contentTypeRoute: Route,
         allowContentTypes: List<ContentType>,
         onSuccess: contentTypeCheckerCallback? = null,
@@ -41,39 +65,73 @@ class ContentTypeChecker(private val configuration: Configuration) {
             //送られてきたContent-Type
             val contentType = call.request.contentType()
 
-            //許可された中に含まれていれば
-            if(allowContentTypes.contains(contentType)){
+            executeHandling(
 
-                //独自の処理があればそれを実行
-                if(onSuccess != null){
-                    onSuccess(this, allowContentTypes)
-                }
-                //なければ、install時の処理を実行
-                else{
-                    configuration.onSuccess(this, allowContentTypes)
-                }
+                //送られてきたContent-Typeがホワイトリストに含まれていれば成功
+                isSuccess = allowContentTypes.contains(contentType),
 
-            }
-            //許可された中に含まれていなければ
-            else{
+                //独自のものを優先し、なければデフォルト値のものを実行
+                onSuccess = {
+                    if (onSuccess != null) {
+                        onSuccess(this, allowContentTypes)
+                    }
+                    else {
+                        configuration.onSuccess(this, allowContentTypes)
+                    }
+                },
+                onError =  {
+                    if (onError != null) {
+                        onError(this, allowContentTypes)
+                    }
+                    else {
+                        configuration.onError(this, allowContentTypes)
+                    }
+                },
+                continueOnError = continueOnError ?: configuration.continueOnError
+            )
+        }
+    }
 
-                //独自の処理があればそれを実行
-                if(onError != null){
-                    onError(this, allowContentTypes)
-                }
-                //なければ、install時の処理を実行
-                else{
-                    configuration.onError(this, allowContentTypes)
-                }
 
-                //処理を続けない場合（独自のもので判定、なければinstall時のもので判定）
-                if(
-                    (continueOnError != null && !continueOnError) ||
-                    (continueOnError == null && !configuration.continueOnError)
-                ) {
-                    finish()
-                }
-            }
+    //差し込む処理
+    internal fun interceptOnNegative(
+        contentTypeRoute: Route,
+        negativeContentTypes: List<ContentType>,
+        onSuccess: contentTypeCheckerCallback? = null,
+        onError: contentTypeCheckerCallback? = null,
+        continueOnError: Boolean? = null
+    ) {
+
+        //Featuresに処理を差し込む
+        contentTypeRoute.intercept(ApplicationCallPipeline.Features) {
+
+            //送られてきたContent-Type
+            val contentType = call.request.contentType()
+
+            executeHandling(
+
+                //送られてきたContent-Typeがブラックリストに含まれていなければ成功
+                isSuccess = !negativeContentTypes.contains(contentType),
+
+                //独自のものを優先し、なければデフォルト値のものを実行
+                onSuccess = {
+                    if (onSuccess != null) {
+                        onSuccess(this, negativeContentTypes)
+                    }
+                    else {
+                        configuration.onSuccess(this, negativeContentTypes)
+                    }
+                },
+                onError =  {
+                    if (onError != null) {
+                        onError(this, negativeContentTypes)
+                    }
+                    else {
+                        configuration.onError(this, negativeContentTypes)
+                    }
+                },
+                continueOnError = continueOnError ?: configuration.continueOnError
+            )
         }
     }
 
@@ -112,9 +170,38 @@ fun Route.allowContentType(
 
     //featureのintercept
     application.feature(ContentTypeChecker)
-        .intercept(
+        .interceptOnAllow(
             contentTypeRoute,
             allowContentTypes.toList(),
+            onSuccess,
+            onError,
+            continueOnError
+        )
+
+    //下位のルートの作成
+    contentTypeRoute.build()
+
+    return contentTypeRoute
+}
+
+
+@Suppress("unused")
+fun Route.negativeContentType(
+    vararg negativeContentTypes: ContentType,
+    onSuccess: contentTypeCheckerCallback? = null,
+    onError: contentTypeCheckerCallback? = null,
+    continueOnError: Boolean? = null,
+    build: Route.() -> Unit
+): Route{
+
+    //ルートの作成
+    val contentTypeRoute = createChild(ContentTypeCheckerRouteSelector())
+
+    //featureのintercept
+    application.feature(ContentTypeChecker)
+        .interceptOnNegative(
+            contentTypeRoute,
+            negativeContentTypes.toList(),
             onSuccess,
             onError,
             continueOnError

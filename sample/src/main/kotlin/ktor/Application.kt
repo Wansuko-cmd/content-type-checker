@@ -19,13 +19,15 @@ fun Application.module(){
         //正しいContent-Typeの時の処理
         onSuccess = {
             println("Content-Type: ${call.request.contentType()}")
+            call.respond("Success")
         }
 
         ////間違っているContent-Typeの時の処理
-        onError = { allowContentType ->
+        onError = {
+            println("Allowed: [${it.joinToString(", ")}], Request: ${call.request.contentType()}")
             call.respond(
                 HttpStatusCode.UnsupportedMediaType,
-                "許可されているContent-Typeは${allowContentType.joinToString(", ")}のみです"
+                "Error"
             )
         }
 
@@ -52,7 +54,7 @@ fun Application.module(){
         allowContentType(
             ContentType.Audio.Any,
             onSuccess = {
-                call.respond(HttpStatusCode.NotFound)
+                call.respond(HttpStatusCode.IAmATeaPot)
             }
         ){
             get("world"){
@@ -64,3 +66,5 @@ fun Application.module(){
         }
     }
 }
+
+val HttpStatusCode.Companion.IAmATeaPot get() = HttpStatusCode(418, "I'm a tea pot")
