@@ -58,4 +58,4 @@ jobs:
       - name: ローカルのMavenの変更内容をプッシュ
         run: |
           cd ${{ github.workspace }}/maven
-          git push origin master:gh-pages
+          git push origin gh-pages
