@@ -12,8 +12,11 @@ jobs:
       - name: 現ブランチからチェックアウト
         uses: actions/checkout@v2
 
+      - name: 実行許可を付与
+        run: chmod 111 ${{ github.workspace }}/gradlew
+
       - name: Publish用にビルド
-        run: ./gradlew publish
+        run: ${{ github.workspace }}/gradlew publish
 
       - name: Mavenリポジトリを取得
         run: git clone https://github.com/Wansuko-cmd/maven.git
@@ -23,6 +26,9 @@ jobs:
 
       - name: 中身を確認
         run: ls
+
+      - name: github.workspaceの中身を確認ｎ
+        run: cd ${{ github.workspace }} && ls
 
 #      - name: ビルドしたものをローカルのMavenリポジトリに反映
 #        run: cp -v -r ./lib/build/publish/com
