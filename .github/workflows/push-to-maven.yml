@@ -1,0 +1,28 @@
+name: '自身のMavenリポジトリにPush'
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  Reflect-To-My-Maven:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 現ブランチからチェックアウト
+        uses: actions/checkout@v2
+
+      - name: Publish用にビルド
+        run: ./lib/gradlew publish
+
+      - name: Mavenリポジトリを取得
+        run: git clone https://github.com/Wansuko-cmd/maven.git
+
+      - name: git configを設定
+        run: git config --global user.email "action@github.com" && git config --global user.name "Wansuko-cmd"
+
+      - name: 中身を確認
+        run: ls
+
+#      - name: ビルドしたものをローカルのMavenリポジトリに反映
+#        run: cp -v -r ./lib/build/publish/com
