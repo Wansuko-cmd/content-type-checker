@@ -16,7 +16,7 @@ repositories {
 }
 
 //Content-Type-Checker
-implementation("com.wsr:content-type-checker:0.0.3")
+implementation("com.wsr:content-type-checker:0.0.4")
 
 ```
 
@@ -139,6 +139,57 @@ onSuccess = {
 
 基本的な書き方は`onSuccess`と同じです。
 
+### onErrorWhenAllow
+
+#### 型
+
+suspend PipelineContext<Unit, ApplicationCall>.(List<ContentType>) -> Unit
+
+#### 内容
+onSuccessとほぼ同じですが、`allowContentType`の処理範囲内の場合こちらが適用されます。
+設定していなければ`onSuccess`が適用されます
+
+### onSuccessWhenNegative
+
+#### 型
+
+suspend PipelineContext<Unit, ApplicationCall>.(List<ContentType>) -> Unit
+
+#### 内容
+onSuccessとほぼ同じですが、`negativeContentType`の処理範囲内の場合こちらが適用されます。
+設定していなければ`onSuccess`が適用されます
+
+### onError
+
+#### 型
+
+suspend PipelineContext<Unit, ApplicationCall>.(List<ContentType>) -> Unit
+
+#### 内容
+指定したContent-Typeとは違うリクエストが来た時に走る処理を記述します。
+この処理が走った後で、`continueOnError`の値によって、もともとの処理が走るかどうかが
+決まります。
+
+### onErrorWhenAllow
+
+#### 型
+
+suspend PipelineContext<Unit, ApplicationCall>.(List<ContentType>) -> Unit
+
+#### 内容
+onErrorとほぼ同じですが、`allowContentType`の処理範囲内の場合こちらが適用されます。
+設定していなければ`onError`が適用されます
+
+### onErrorWhenAllow
+
+#### 型
+
+suspend PipelineContext<Unit, ApplicationCall>.(List<ContentType>) -> Unit
+
+#### 内容
+onErrorとほぼ同じですが、`negativeContentType`の処理範囲内の場合こちらが適用されます。
+設定していなければ`onError`が適用されます
+
 ### continueOnError
 
 #### 型
@@ -162,28 +213,42 @@ continueOnError = false
 
 ## Route内での書き方
 
-実際にRouteで利用する際には`allowContentType`を使います。
+実際にRouteで利用する際には`allowContentType`もしくは`negativeContentType`を使います。
+これら二つの違いは、ContentTypeを指定する時に、
+ホワイトリスト形式でContentTypeを指定するか、
+ブラックリスト形式で指定するかです。
 
 ```kotlin
 
+//許可するContent-Typeを記述
 allowContentType(
-    ContentType.Audio.Any,
-    onSuccess = {
-        call.respond(HttpStatusCode.NotFound)
-    }
+    ContentType.Application.Json, ContentType.Application.JavaScript
 ){
-    get("world"){
+    get("allow") {
         //Something
     }
-    post("world") {
+
+    post("allow") {
+        //Something
+    }
+}
+
+//許可しないContent-Typeを記述
+negativeContentType(
+    ContentType.Application.Xml, ContentType.Application.GZip
+) {
+    get("negative") {
+        //Something
+    }
+
+    post("negative") {
         //Something
     }
 }
 
 ```
 
-どのContent-Typeの時に成功判定にするかを第一引数に渡し、
-残りは他のRouteと同じように書くことができます。
+Content-Typeのホワイトリストorブラックリストを列挙する形で第一引数に渡します
 
 また、ここでデフォルト値をオーバーライドすることが可能です。
 オーバーライドをした場合、そちらの処理が優先されます。
@@ -196,8 +261,8 @@ allowContentType(
 
 このライブラリはあくまでContent-Typeによって処理を挟みこみ、
 中断させることを可能にするものです。
-そのため、`accept`のように、`allowContentType`で囲っておけば
-同じルートが使えるわけではありません。
+そのため、例えば`accept`のように、`allowContentType`で囲っておけば
+同じルートが使える、というわけではありません。
 
 例えば下の例だと正常に動かない場合があります。
 
@@ -206,7 +271,7 @@ allowContentType(
 allowContentType(
     ContentType.Application.Json
 ){
-    get("hello"){
+    get("allow"){
         //Something
     }
 }
@@ -214,7 +279,7 @@ allowContentType(
 allowContentType(
     ContentType.Audio.Any,
 ){
-    get("hello"){
+    get("allow"){
         //Something
     }
 }
