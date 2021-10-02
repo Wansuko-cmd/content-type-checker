@@ -22,6 +22,16 @@ class ContentTypeChecker(private val configuration: Configuration) {
         //間違っている時
         var onError: contentTypeCheckerCallback = {}
 
+        //allowContentTypeにおいての処理
+        var onSuccessWhenAllow: contentTypeCheckerCallback? = null
+
+        var onErrorWhenAllow: contentTypeCheckerCallback? = null
+
+        //negativeContentTypeにおいての処理
+        var onSuccessWhenNegative: contentTypeCheckerCallback? = null
+
+        var onErrorWhenNegative: contentTypeCheckerCallback? = null
+
         //間違っているときに、処理を続けるかどうか
         var continueOnError: Boolean = true
     }
@@ -76,7 +86,8 @@ class ContentTypeChecker(private val configuration: Configuration) {
                         onSuccess(this, allowContentTypes)
                     }
                     else {
-                        configuration.onSuccess(this, allowContentTypes)
+                        if(configuration.onSuccessWhenAllow != null) configuration.onSuccessWhenAllow!!(this, allowContentTypes)
+                        else configuration.onSuccess(this, allowContentTypes)
                     }
                 },
                 onError =  {
@@ -84,7 +95,8 @@ class ContentTypeChecker(private val configuration: Configuration) {
                         onError(this, allowContentTypes)
                     }
                     else {
-                        configuration.onError(this, allowContentTypes)
+                        if(configuration.onErrorWhenAllow != null) configuration.onErrorWhenAllow!!(this, allowContentTypes)
+                        else configuration.onError(this, allowContentTypes)
                     }
                 },
                 continueOnError = continueOnError ?: configuration.continueOnError
@@ -119,7 +131,8 @@ class ContentTypeChecker(private val configuration: Configuration) {
                         onSuccess(this, negativeContentTypes)
                     }
                     else {
-                        configuration.onSuccess(this, negativeContentTypes)
+                        if(configuration.onSuccessWhenAllow != null) configuration.onSuccessWhenNegative!!(this, negativeContentTypes)
+                        else configuration.onSuccess(this, negativeContentTypes)
                     }
                 },
                 onError =  {
@@ -127,7 +140,8 @@ class ContentTypeChecker(private val configuration: Configuration) {
                         onError(this, negativeContentTypes)
                     }
                     else {
-                        configuration.onError(this, negativeContentTypes)
+                        if(configuration.onErrorWhenAllow != null) configuration.onErrorWhenNegative!!(this, negativeContentTypes)
+                        else configuration.onError(this, negativeContentTypes)
                     }
                 },
                 continueOnError = continueOnError ?: configuration.continueOnError
