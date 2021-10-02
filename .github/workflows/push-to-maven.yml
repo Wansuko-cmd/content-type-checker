@@ -28,7 +28,7 @@ jobs:
         run: cd ${{ github.workspace }} && cp -v -r ./lib/build/publish/com ./maven
 
       - name: ローカルのMavenリポジトリの変更を追加
-        run: cd ${{ github.workspace }} && git add *
+        run: cd ${{ github.workspace }}/maven && git add *
 
       - name: ローカルのMavenリポジトリの変更をコミット
         run: cd ${{ github.workspace }}/maven && git commit -m "[update] Content-Type-Checkerのアップデート"
