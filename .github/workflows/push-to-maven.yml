@@ -23,7 +23,7 @@ jobs:
 
       - name: Mavenリポジトリを取得
         run: |
-          git clone https://github.com/Wansuko-cmd/maven.git
+          gh repo clone Wansuko-cmd/maven
 
       - name: ビルドしたものをローカルのMavenリポジトリに反映
         run: |
