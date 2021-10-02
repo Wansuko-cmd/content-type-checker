@@ -55,7 +55,7 @@ class ContentTypeChecker(private val configuration: Configuration) {
             onError()
 
             //処理を続けない場合パイプラインを終了する
-            if (continueOnError) finish()
+            if (!continueOnError) finish()
         }
     }
 
