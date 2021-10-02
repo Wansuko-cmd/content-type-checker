@@ -27,5 +27,11 @@ jobs:
       - name: ビルドしたものをローカルのMavenリポジトリに反映
         run: cd ${{ github.workspace }} && cp -v -r ./lib/build/publish/com ./maven
 
-      - name: mavenの中身を確認
-        run: cd ${{ github.workspace }}/maven/com/wsr/content-type-checker && ls
+      - name: ローカルのMavenリポジトリの変更をコミット
+        run: cd ${{ github.workspace }}/maven && git commit -m "[update] Content-Type-Checkerのアップデート"
+
+      - name: Mavenリポジトリをチェックアウト
+        run: cd ${{ github.workspace }}/maven && git checkout -b "update/content-type-checker"
+
+      - name: ローカルのMavenの変更内容をプッシュ
+        run: cd ${{ github.workspace }}/maven && git push origin update/content-type-checker
