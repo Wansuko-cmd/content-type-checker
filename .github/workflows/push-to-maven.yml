@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: 現ブランチからチェックアウト
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 実行許可を付与
         run: |
