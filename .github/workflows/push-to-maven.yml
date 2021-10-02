@@ -13,28 +13,44 @@ jobs:
         uses: actions/checkout@v2
 
       - name: 実行許可を付与
-        run: cd ${{ github.workspace }} && chmod 777 ${{ github.workspace }}/gradlew
+        run: |
+          chmod 777 ${{ github.workspace }}/gradlew
 
       - name: Publish用にビルド
-        run: cd ${{ github.workspace }} && ./gradlew publish
+        run: |
+          cd ${{ github.workspace }}
+          ./gradlew publish
 
       - name: Mavenリポジトリを取得
-        run: git clone https://github.com/Wansuko-cmd/maven.git
-
-      - name: git configを設定
-        run: git config --global user.email "action@github.com" && git config --global user.name "Wansuko-cmd"
+        run: |
+          git clone https://github.com/Wansuko-cmd/maven.git
 
       - name: ビルドしたものをローカルのMavenリポジトリに反映
-        run: cd ${{ github.workspace }} && cp -v -r ./lib/build/publish/com ./maven
+        run: |
+          cd ${{ github.workspace }}
+          cp -v -r ./lib/build/publish/com ./maven
 
       - name: ローカルのMavenリポジトリの変更を追加
-        run: cd ${{ github.workspace }}/maven && git add *
+        run: |
+          cd ${{ github.workspace }}/maven
+          git add *
 
       - name: ローカルのMavenリポジトリの変更をコミット
-        run: cd ${{ github.workspace }}/maven && git commit -m "[update] Content-Type-Checkerのアップデート"
+        run: |
+          cd ${{ github.workspace }}/maven
+          git commit -m "[update] Content-Type-Checkerのアップデート"
 
       - name: Mavenリポジトリをチェックアウト
-        run: cd ${{ github.workspace }}/maven && git checkout -b "update/content-type-checker"
+        run: |
+          cd ${{ github.workspace }}/maven
+          git checkout -b "update/content-type-checker"
+
+      - name: git configを設定
+        run: |
+          git config --global user.email "wansuko.lll@gmail.com"
+          git config --global user.name "Wansuko-cmd"
 
       - name: ローカルのMavenの変更内容をプッシュ
-        run: cd ${{ github.workspace }}/maven && git push origin update/content-type-checker
+        run: |
+          cd ${{ github.workspace }}/maven
+          git push origin update/content-type-checker
