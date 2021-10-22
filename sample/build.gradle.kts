@@ -29,6 +29,6 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
 
     //Content-Type-Checker
-//    implementation("com.wsr:content-type-checker:0.0.3")
-    implementation(project(":lib"))
+    implementation("com.wsr:content-type-checker:0.0.4")
+//    implementation(project(":lib"))
 }

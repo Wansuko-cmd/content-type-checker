@@ -186,7 +186,7 @@ fun Route.allowContentType(
     application.feature(ContentTypeChecker)
         .interceptOnAllow(
             contentTypeRoute,
-            allowContentTypes.toList(),
+            listOf(*allowContentTypes),
             onSuccess,
             onError,
             continueOnError
@@ -215,7 +215,7 @@ fun Route.negativeContentType(
     application.feature(ContentTypeChecker)
         .interceptOnNegative(
             contentTypeRoute,
-            negativeContentTypes.toList(),
+            listOf(*negativeContentTypes),
             onSuccess,
             onError,
             continueOnError
